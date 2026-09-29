@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
+<!-- CSP razonable para un archivo estático sin servidor propio: restringe de dónde
+     puede cargar recursos (fuentes, imágenes, mapa embebido) y evita que un
+     script inyectado mande datos a un dominio externo. 'unsafe-inline' es
+     necesario porque el CSS y el JS de esta página van inline en el mismo
+     archivo (no hay build ni archivos .js/.css separados). Headers reales
+     como HSTS o X-Frame-Options los agrega GitHub Pages en la respuesta HTTP;
+     eso no se puede fijar desde un <meta>. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'">
 <title>RAVE · Menú</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -217,6 +225,18 @@
   }
   .info-btn.gold{ background:var(--gold); color:var(--charcoal); font-weight:700; }
 
+  /* ---- Panel de reseñas: más jerarquía que los otros paneles, mismo contenido ---- */
+  .info-panel.review-panel{
+    background:linear-gradient(160deg, #fff, #fdf6e6);
+    border-color:#e8d9b5;
+  }
+  .review-stars{ display:flex; justify-content:center; gap:4px; margin-bottom:10px; }
+  .info-panel.review-panel h2{ margin-bottom:4px; }
+  .info-panel.review-panel .info-sub{ margin-bottom:16px; }
+  .info-panel.review-panel .info-btn.gold{
+    box-shadow:0 6px 16px rgba(201,150,62,0.3); font-size:13.5px; padding:13px;
+  }
+
   /* ---- Redes sociales: grilla ícono + nombre + usuario ---- */
   .social-panel{ text-align:left; }
   .social-panel h2, .social-panel .info-sub{ text-align:center; }
@@ -238,9 +258,10 @@
 
   footer{ text-align:center; padding:6px 20px 0; font-size:11px; color:#948d7c; }
   footer .foot-brand{ color:var(--gold); font-weight:600; letter-spacing:1px; }
+  .price-note{ text-align:center; font-size:11px; color:#8c8574; margin:0 20px 18px; }
   .team-link{
     display:flex; align-items:center; justify-content:center; gap:8px; margin:16px auto 0;
-    padding:0 18px; min-height:var(--tap); border-radius:20px; border:1px solid var(--line);
+    padding:0 18px; min-height:var(--tap); border-radius:20px; border:1px dashed #c9c2ae;
     background:none; color:#948d7c; font-size:11.5px; cursor:pointer; font-family:'Poppins',sans-serif;
     transition:border-color .18s ease, color .18s ease;
   }
@@ -286,6 +307,20 @@
   .to-top.show{ display:flex; }
   .to-top.lift{ bottom:94px; }
   .to-top:active{ transform:scale(.9); }
+
+  /* ---- Botón flotante de venta (hashishi) ---- */
+  .sale-fab{
+    position:fixed; left:16px; bottom:20px; z-index:55;
+    display:flex; align-items:center; gap:6px; height:42px; padding:0 15px;
+    border-radius:21px; background:linear-gradient(135deg, var(--gold-deep), var(--gold));
+    color:#2b2216; font-weight:700; font-size:11.5px; text-decoration:none;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+    transition:bottom .2s ease, transform .15s ease;
+    font-family:'Poppins', sans-serif;
+  }
+  .sale-fab .sf-ic{ font-size:15px; line-height:1; }
+  .sale-fab:active{ transform:scale(.95); }
+  .sale-fab.lift{ bottom:94px; }
 
   /* ---- Floating cart bar ---- */
   #cart-bar{
@@ -357,6 +392,28 @@
     font-weight:700; font-size:13.5px; font-family:'Poppins', sans-serif; cursor:pointer;
   }
   .club-ok{ display:none; text-align:center; font-size:12.5px; color:#4a7a4a; margin-top:12px; }
+  .legal-details{
+    margin-top:16px; border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; background:#fbfaf7;
+  }
+  .legal-details summary{
+    display:flex; align-items:center; gap:8px; list-style:none; cursor:pointer;
+    padding:0 14px; min-height:var(--tap, 44px);
+    font-size:12px; font-weight:600; color:#4a463d;
+  }
+  .legal-details summary::-webkit-details-marker{ display:none; }
+  .legal-details summary::before{ content:'📄'; font-size:13px; flex-shrink:0; }
+  .legal-details summary::after{
+    content:'▾'; margin-left:auto; color:#8a6d1f; font-size:11px;
+    transition:transform .18s ease; flex-shrink:0;
+  }
+  .legal-details[open] summary::after{ transform:rotate(180deg); }
+  .legal-details[open] summary{ border-bottom:1px solid var(--line); }
+  .legal-details .legal-body{ font-size:11px; line-height:1.6; color:#6f6a5c; padding:12px 14px 16px; }
+  .legal-details .legal-body h4{ font-size:11.5px; color:#4a463d; margin:12px 0 4px; }
+  .legal-details .legal-body h4:first-child{ margin-top:0; }
+  .legal-details .legal-body ul{ margin:4px 0 4px 16px; padding:0; }
+  .legal-details .legal-body li{ margin-bottom:3px; }
   .club-error{ display:none; text-align:center; font-size:12px; color:#a33; margin-top:12px; }
 
   /* ---- Panel de administrador (oculto) ---- */
@@ -368,6 +425,43 @@
     background:var(--cream); width:100%; max-width:480px; border-radius:14px;
     padding:18px 18px 20px; max-height:88vh; overflow-y:auto;
   }
+  .admin-privacy-bar{
+    display:flex; align-items:center; gap:8px; background:var(--charcoal-2); color:var(--gold-deep);
+    font-size:10.5px; font-weight:700; letter-spacing:.6px; text-transform:uppercase;
+    padding:9px 18px; border-radius:14px 14px 0 0; margin:-18px -18px 16px;
+  }
+  .admin-privacy-bar .lock-ic{ font-size:13px; }
+
+  /* ---- Login del panel de administrador (reemplaza prompt() nativo:
+     muchos navegadores integrados de apps como WhatsApp/Instagram, y
+     algunos visores rápidos de archivos en celular, bloquean los
+     cartelitos prompt()/alert() del navegador sin avisar; con este
+     formulario propio funciona en cualquier lado) ---- */
+  #admin-login-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:95; display:none;
+    align-items:center; justify-content:center; padding:20px;
+  }
+  #admin-login-box{
+    background:var(--charcoal-2); color:#eae6da; width:100%; max-width:320px;
+    border-radius:14px; padding:26px 22px; text-align:center;
+  }
+  #admin-login-box .alb-lock{ font-size:26px; margin-bottom:8px; }
+  #admin-login-box h3{ font-family:'Playfair Display', serif; font-size:17px; margin:0 0 6px; color:#fff; }
+  #admin-login-box .alb-sub{ font-size:11.5px; color:#cfc9ba; margin:0 0 16px; }
+  #admin-login-box input{
+    width:100%; padding:11px 12px; border-radius:8px; border:1px solid #55503f;
+    background:#2b2822; color:#eae6da; font-size:16px; font-family:'Poppins',sans-serif;
+    margin-bottom:8px; text-align:center;
+  }
+  #admin-login-box .alb-err{ display:none; color:#e08a8a; font-size:11px; margin-bottom:10px; }
+  #admin-login-box.invalid .alb-err{ display:block; }
+  #admin-login-box.invalid input{ border-color:#a33; }
+  #admin-login-box button{
+    width:100%; padding:12px; border-radius:8px; border:none; font-weight:700; font-size:13px;
+    font-family:'Poppins',sans-serif; cursor:pointer; margin-bottom:8px; min-height:var(--tap, 44px);
+  }
+  #admin-login-submit{ background:var(--gold); color:#2b2216; }
+  #admin-login-cancel{ background:none; color:#948d7c; text-decoration:underline; font-weight:400; margin-bottom:0; }
   #admin-panel h3{ font-family:'Playfair Display', serif; font-size:17px; margin:0 0 4px; }
   #admin-panel .admin-note{ font-size:11px; color:#948d7c; margin:0 0 12px; }
   #admin-search{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--line); font-family:'Poppins',sans-serif; font-size:16px; margin-bottom:12px; }
@@ -546,6 +640,8 @@
     <span class="pi">🚚</span>
     <span class="pt">Comprando <strong>2 combos</strong> o <strong>3 vinos</strong>, el envío es <strong>gratis</strong> dentro del macrocentro y alrededores.</span>
   </div>
+
+  <div class="price-note">🧾 Todos los precios publicados incluyen impuestos.</div>
 
   <!-- ===== FILTROS Y BUSCADOR ===== -->
   <div id="toolbar">
@@ -1301,18 +1397,63 @@
       </div>
       <label class="club-consent">
         <input type="checkbox" id="club-consent" required>
-        <span>Acepto que RAVE guarde estos datos, únicamente con el fin de contactarme por sorteos, ofertas y saludos de cumpleaños, conforme a la Ley 25.326 de Protección de Datos Personales. Mis datos no se comparten con terceros ni se usan para otro fin.</span>
+        <span>Acepto que RAVE guarde estos datos, únicamente con el fin de contactarme por sorteos, ofertas y saludos de cumpleaños, conforme a la Ley 25.326 de Protección de Datos Personales. Mis datos no se comparten con terceros ni se usan para otro fin. Ver <a href="#legal-rave" style="color:#8a6d1f;">Términos y Política de Privacidad</a>.</span>
       </label>
       <button type="button" id="arco-btn" class="arco-link">¿Querés acceder, corregir o eliminar tus datos? Ejercé tus derechos ARCO</button>
       <button class="club-btn" type="submit">Sumarme al Club RAVE</button>
       <div class="club-ok" id="club-ok">¡Listo! Ya sos parte del Club RAVE.</div>
       <div class="club-error" id="club-error">No pudimos guardar tus datos en este dispositivo. Probá de nuevo en un momento.</div>
     </form>
+
+    <details class="legal-details" id="legal-rave">
+      <summary>Términos y Política de Privacidad</summary>
+      <div class="legal-body">
+        <h4>¿Quién trata tus datos?</h4>
+        <p>Licorería y Vinería RAVE, Urquiza 1052, Salta, Argentina. Contacto: WhatsApp 387 4574892.</p>
+
+        <h4>¿Para qué usamos tus datos?</h4>
+        <p>Nombre, WhatsApp y fecha de cumpleaños se usan exclusivamente para avisarte de sorteos, promociones exclusivas para socios y saludarte el día de tu cumpleaños. Nunca se venden ni comparten con terceros.</p>
+
+        <h4>Base legal y minimización</h4>
+        <p>Tratamos tus datos porque diste tu consentimiento expreso al tildar la casilla de arriba (Ley 25.326). Solo pedimos el mínimo necesario para este fin: no se solicitan datos adicionales como DNI, dirección o email.</p>
+
+        <h4>¿Cómo se guardan?</h4>
+        <p>Se guardan únicamente en este dispositivo (no en un servidor de RAVE), en un formato ofuscado, y como respaldo se envía un mensaje al WhatsApp del negocio en cada alta. Al ser un catálogo estático sin servidor propio, esto es una ofuscación razonable — no un cifrado de nivel bancario.</p>
+
+        <h4>Tus derechos ARCO</h4>
+        <ul>
+          <li><b>Acceso:</b> pedir qué datos tuyos tenemos guardados.</li>
+          <li><b>Rectificación:</b> corregir un dato mal cargado.</li>
+          <li><b>Cancelación:</b> pedir que borremos tus datos.</li>
+          <li><b>Oposición:</b> pedir que dejemos de contactarte.</li>
+        </ul>
+        <p>Se ejercen en cualquier momento con el botón "Ejercé tus derechos ARCO" de arriba, o escribiendo directamente al WhatsApp del local.</p>
+
+        <h4>Precios y pedidos (Ley 24.240 de Defensa del Consumidor)</h4>
+        <p>Todos los precios publicados en este menú incluyen impuestos y están sujetos a modificación sin previo aviso; el precio final de tu pedido se confirma por WhatsApp antes de coordinar el pago y la entrega. Este catálogo no cobra online ni toma señas de reserva: el pago se coordina directamente con el local.</p>
+
+        <p style="margin-top:10px;color:#948d7c;">Última actualización: septiembre de 2026.</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- ===== LOGIN DE ACCESO DEL EQUIPO (formulario propio, no usa prompt()) ===== -->
+  <div id="admin-login-overlay">
+    <div id="admin-login-box">
+      <div class="alb-lock">🔒</div>
+      <h3>Acceso del equipo</h3>
+      <p class="alb-sub">Ingresá la contraseña para ver el panel privado.</p>
+      <input id="admin-login-input" type="password" autocomplete="off" placeholder="Contraseña">
+      <div class="alb-err" id="admin-login-err">Contraseña incorrecta.</div>
+      <button id="admin-login-submit" type="button">Entrar</button>
+      <button id="admin-login-cancel" type="button">Cancelar</button>
+    </div>
   </div>
 
   <!-- ===== PANEL DE ADMINISTRADOR (oculto) ===== -->
   <div id="admin-overlay">
     <div id="admin-panel">
+      <div class="admin-privacy-bar"><span class="lock-ic">🔒</span> Zona privada · Solo personal RAVE</div>
       <h3>Club RAVE · Contactos</h3>
       <p class="admin-note">Acceso interno. Datos guardados solo en este dispositivo, en formato ofuscado (no es un cifrado de nivel servidor).</p>
       <input id="admin-search" type="text" placeholder="Buscar por nombre o WhatsApp..." autocomplete="off">
@@ -1339,11 +1480,18 @@
       </div>
     </div>
 
-    <div class="info-panel">
-      <h2>⭐ ¿Cómo fue tu compra?</h2>
+    <div class="info-panel review-panel">
+      <div class="review-stars" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24"><path fill="var(--gold)" d="M12 2.5l2.9 6.6 7.1.7-5.4 4.7 1.7 7-6.3-3.9-6.3 3.9 1.7-7-5.4-4.7 7.1-.7z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24"><path fill="var(--gold)" d="M12 2.5l2.9 6.6 7.1.7-5.4 4.7 1.7 7-6.3-3.9-6.3 3.9 1.7-7-5.4-4.7 7.1-.7z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24"><path fill="var(--gold)" d="M12 2.5l2.9 6.6 7.1.7-5.4 4.7 1.7 7-6.3-3.9-6.3 3.9 1.7-7-5.4-4.7 7.1-.7z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24"><path fill="var(--gold)" d="M12 2.5l2.9 6.6 7.1.7-5.4 4.7 1.7 7-6.3-3.9-6.3 3.9 1.7-7-5.4-4.7 7.1-.7z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24"><path fill="var(--gold)" d="M12 2.5l2.9 6.6 7.1.7-5.4 4.7 1.7 7-6.3-3.9-6.3 3.9 1.7-7-5.4-4.7 7.1-.7z"/></svg>
+      </div>
+      <h2>¿Cómo fue tu compra?</h2>
       <p class="info-sub">Tu reseña en Google nos ayuda a que más gente nos encuentre. Te lleva un minuto.</p>
       <a href="https://www.google.com/maps/search/?api=1&query=Licoreria+RAVE+Urquiza+1052+Salta+Argentina"
-         target="_blank" rel="noopener" class="info-btn gold">Dejar mi reseña</a>
+         target="_blank" rel="noopener" class="info-btn gold">⭐ Dejar mi reseña en Google</a>
     </div>
 
     <div class="info-panel social-panel">
@@ -1368,6 +1516,22 @@
             <span><b>TikTok</b><small>@almacen.y.licorer</small></span>
           </a>
         </li>
+        <!-- EJEMPLO: RAVE todavía no tiene cuenta de X. Reemplazar el href y el
+             usuario cuando la creen (mismo formato que las de arriba). -->
+        <li>
+          <a href="https://x.com/rave_licoreria" target="_blank" rel="noopener">
+            <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#000"/><path d="M7 7l10 10M17 7L7 17" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span><b>X</b><small>@rave_licoreria (ejemplo)</small></span>
+          </a>
+        </li>
+        <!-- EJEMPLO: RAVE todavía no tiene canal de YouTube. Reemplazar el
+             href y el nombre cuando lo creen. -->
+        <li>
+          <a href="https://www.youtube.com/@rave_licoreria" target="_blank" rel="noopener">
+            <svg width="22" height="22" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="6" fill="#FF0000"/><path d="M10 8.5l6 3.5-6 3.5z" fill="#fff"/></svg>
+            <span><b>YouTube</b><small>Licorería RAVE (ejemplo)</small></span>
+          </a>
+        </li>
       </ul>
     </div>
   </div>
@@ -1387,17 +1551,17 @@
   <div class="dev-credit">
     <div class="dc-kicker">Diseño &amp; desarrollo</div>
     <h2>hashishi</h2>
-    <p class="dc-tagline">Menús digitales que venden solos.</p>
-    <p>Este catálogo —carrito, pedidos directos por WhatsApp, club de clientes y panel privado— lo armamos nosotros. Hacemos el mismo sistema a medida para almacenes, kioscos, bares y locales gastronómicos, listo en pocos días y sin comisión por venta.</p>
+    <p class="dc-tagline">¿Te gustó este menú? Es el mismo sistema para tu negocio.</p>
+    <p>Carrito con pedidos directos por WhatsApp, club de clientes con sorteos automáticos y panel de control privado —todo en una sola página, sin comisión por venta y sin depender de apps de delivery. Lo armamos a medida para almacenes, kioscos, bares y locales gastronómicos, listo en pocos días.</p>
     <ul>
       <li>🛒 Carrito y pedidos por WhatsApp</li>
       <li>🎉 Club de clientes, sorteos y cumpleaños</li>
-      <li>🔒 Formularios seguros, Ley 25.326</li>
-      <li>📱 Perfecto en celular y computadora</li>
+      <li>💰 Sin comisión por venta, a diferencia de las apps de delivery</li>
+      <li>🔒 Formularios seguros, conforme a la Ley 25.326</li>
     </ul>
     <div class="dc-actions">
       <a class="dc-btn wa" href="https://wa.me/5493875550142?text=Hola%20hashishi!%20Vi%20el%20men%C3%BA%20digital%20de%20RAVE%20y%20quiero%20uno%20para%20mi%20negocio."
-         target="_blank" rel="noopener">💬 Pedilo por WhatsApp</a>
+         target="_blank" rel="noopener">💬 Quiero este sistema en mi local</a>
       <a class="dc-btn mail" href="mailto:hola@hashishi.com.ar">✉️ hola@hashishi.com.ar</a>
     </div>
     <div class="dc-fine">hashishi · Salta, Argentina · www.hashishi.com.ar</div>
@@ -1425,6 +1589,12 @@
 </div>
 
 <button class="to-top" id="to-top" type="button" aria-label="Volver al inicio">↑</button>
+
+<a class="sale-fab" id="sale-fab" target="_blank" rel="noopener"
+   href="https://wa.me/5493875550142?text=Hola%20hashishi!%20Vi%20el%20men%C3%BA%20digital%20de%20RAVE%20y%20quiero%20uno%20para%20mi%20negocio."
+   aria-label="¿Tenés un negocio? Pedí este sistema para tu local">
+  <span class="sf-ic">🚀</span><span class="sf-txt">¿Tu negocio?</span>
+</a>
 
 <div id="cart-bar">
   <div class="cb-left"><b id="cb-count">0</b> productos</div>
@@ -1462,6 +1632,7 @@
   var emptyEl = document.getElementById('cart-empty');
   var totalValEl = document.getElementById('cp-total-val');
   var toTopBtn = document.getElementById('to-top');
+  var saleFab = document.getElementById('sale-fab');
 
   function fmt(n){
     return '$ ' + n.toLocaleString('es-AR');
@@ -1488,6 +1659,7 @@
     cbCount.textContent = count;
     cbTotal.textContent = fmt(total) + (hasUnpriced ? ' +' : '');
     toTopBtn.classList.toggle('lift', count > 0);
+    saleFab.classList.toggle('lift', count > 0);
   }
 
   // ---- Botón flotante "volver arriba" ----
@@ -1767,6 +1939,14 @@
   var STORAGE_KEY = 'rave_club_clientes';
   var WA_NUMBER = '5493874574892';
 
+  // ==== Cartera de clientes centralizada (Google Sheet) ====
+  // Completar estos dos valores cuando esté publicado el Web App de Apps Script
+  // (ver instrucciones aparte). Mientras SHEET_WEBHOOK_URL esté vacío, el alta
+  // sigue funcionando igual que antes (guardado local + WhatsApp de respaldo),
+  // simplemente no manda nada a la planilla todavía.
+  var SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxHykiHFcSaYucbgX8pvNw1of3o2hgHd0wXixR8swa8L3b6cix-n8rSkHn9hg1mgXzA/exec';
+  var SHEET_TOKEN = 'rave-x8Kq2mTz9Lp4Vw'; // debe ser IGUAL al TOKEN del script de Google
+
   // ---- Sanitización centralizada (XSS) ----
   function sanitizeInput(str){
     return String(str == null ? '' : str)
@@ -1860,6 +2040,20 @@
       return;
     }
 
+    // Cartera centralizada: manda el alta a la Google Sheet del negocio, además
+    // del guardado local. mode:'no-cors' + text/plain evita que el navegador
+    // bloquee el pedido por CORS (Apps Script no responde headers CORS propios);
+    // a cambio no podemos leer la respuesta, así que esto es "mandar y no mirar
+    // atrás" — si falla la red no rompe el alta, que ya quedó guardada arriba.
+    if(SHEET_WEBHOOK_URL){
+      fetch(SHEET_WEBHOOK_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ token: SHEET_TOKEN, nombre: nombre, whatsapp: whatsDigits, cumple: cumple })
+      }).catch(function(){ /* sin conexión: el alta local y el whatsapp de respaldo ya cubrieron esto */ });
+    }
+
     // Respaldo por WhatsApp al negocio, ademas de guardarlo (ofuscado) en este dispositivo
     var msg = 'Alta Club RAVE\nNombre: ' + nombre + '\nWhatsApp: ' + whatsDigits + '\nCumpleanos: ' + cumple;
     window.open('https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg), '_blank');
@@ -1909,26 +2103,55 @@
         '<button class="ar-del" type="button" data-del="' + escapeHTML(c.id) + '">Borrar</button>';
       listEl.appendChild(row);
     });
+    // Borrado en dos toques (en vez de confirm(), que también bloquean
+    // algunos navegadores integrados): el primer toque pide confirmar,
+    // el segundo (dentro de 3s) borra de verdad.
     listEl.querySelectorAll('[data-del]').forEach(function(btn){
       btn.addEventListener('click', function(){
-        if(!confirm('¿Borrar este contacto?')) return;
-        var id = btn.getAttribute('data-del');
-        saveClientes(getClientes().filter(function(c){ return c.id !== id; }));
-        renderAdmin(searchEl.value);
+        if(btn.dataset.confirming === '1'){
+          var id = btn.getAttribute('data-del');
+          saveClientes(getClientes().filter(function(c){ return c.id !== id; }));
+          renderAdmin(searchEl.value);
+        } else {
+          btn.dataset.confirming = '1';
+          btn.textContent = '¿Seguro? Tocá de nuevo';
+          setTimeout(function(){ btn.dataset.confirming = ''; btn.textContent = 'Borrar'; }, 3000);
+        }
       });
     });
   }
 
+  // ---- Login del panel (formulario propio, ver nota de CSS más arriba) ----
+  var loginOverlay = document.getElementById('admin-login-overlay');
+  var loginBox = document.getElementById('admin-login-box');
+  var loginInput = document.getElementById('admin-login-input');
+
   function openAdminGate(){
-    var pass = prompt('Contraseña de administrador:');
-    if(pass === null) return;
-    if(pass !== ADMIN_PASSWORD){ alert('Contraseña incorrecta.'); return; }
-    renderAdmin('');
-    searchEl.value = '';
-    overlay.style.display = 'flex';
+    loginBox.classList.remove('invalid');
+    loginInput.value = '';
+    loginOverlay.style.display = 'flex';
+    setTimeout(function(){ loginInput.focus(); }, 50);
   }
+  function closeLoginGate(){
+    loginOverlay.style.display = 'none';
+  }
+  function trySubmitLogin(){
+    if(loginInput.value === ADMIN_PASSWORD){
+      closeLoginGate();
+      renderAdmin('');
+      searchEl.value = '';
+      overlay.style.display = 'flex';
+    } else {
+      loginBox.classList.add('invalid');
+    }
+  }
+  document.getElementById('admin-login-submit').addEventListener('click', trySubmitLogin);
+  document.getElementById('admin-login-cancel').addEventListener('click', closeLoginGate);
+  loginInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') trySubmitLogin(); });
+  loginOverlay.addEventListener('click', function(e){ if(e.target === loginOverlay) closeLoginGate(); });
+
   // Doble clic en el título (acceso rápido) y botón visible "Acceso del equipo" en el pie de página:
-  // ambos abren el mismo panel, con la misma contraseña.
+  // ambos abren el mismo formulario de acceso, con la misma contraseña.
   document.getElementById('brand-title').addEventListener('dblclick', openAdminGate);
   document.getElementById('team-access-btn').addEventListener('click', openAdminGate);
   searchEl.addEventListener('input', function(){ renderAdmin(searchEl.value); });
